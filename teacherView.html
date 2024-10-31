@@ -28,9 +28,9 @@
         // Function to load class data and populate the attendance form
         async function loadClassData() {
             try {
-                classIdentifier = document.getElementById('classIdentifier').value.trim(); // Set the global variable
+                const inputIdentifier = document.getElementById('classIdentifier').value.trim(); // Get input value
                 
-                if (!classIdentifier) {
+                if (!inputIdentifier) {
                     throw new Error('Please enter a class name or ID');
                 }
 
@@ -40,11 +40,14 @@
                 }
 
                 const data = await response.json();
-                const classData = data.classes.find(cls => cls.name === classIdentifier || cls.id === classIdentifier);
+                const classData = data.classes.find(cls => cls.name === inputIdentifier || cls.id === inputIdentifier);
                 
                 if (!classData) {
                     throw new Error('Class not found');
                 }
+
+                // Always set classIdentifier to the found class ID
+                classIdentifier = classData.id;
 
                 const studentList = document.getElementById('studentList');
                 studentList.innerHTML = ''; // Clear the existing list
@@ -76,9 +79,11 @@
             const checkboxes = document.querySelectorAll('.attendance-checkbox');
             const attendanceList = [];
             checkboxes.forEach(checkbox => {
-                if (checkbox.checked) {
-                    attendanceList.push(checkbox.getAttribute('data-student-name'));
-                }
+                const studentName = checkbox.getAttribute('data-student-name');
+                attendanceList.push({
+                    studentName: studentName,
+                    present: checkbox.checked // true if checked, false otherwise
+                });
             });
 
             // Send the attendance list to the server

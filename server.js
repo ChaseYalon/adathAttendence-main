@@ -12,8 +12,10 @@ async function readDatabase() {
         return JSON.parse(data);
     } catch (error) {
         if (error.code === 'ENOENT') {
-            await fs.writeFile('database.json', JSON.stringify({ classes: [] }, null, 2));
-            return { classes: [] };
+            // Initialize the database with an empty classes array
+            const initialData = { classes: [] };
+            await fs.writeFile('database.json', JSON.stringify(initialData, null, 2));
+            return initialData;
         }
         throw error;
     }
@@ -71,34 +73,6 @@ const server = http.createServer(async (request, response) => {
             }
         }
     }
-    // Get class data endpoint
-    else if (request.method === 'GET' && parsedUrl.pathname === '/get-class') {
-        try {
-            const classId = parsedUrl.query.id;
-            
-            if (!classId) {
-                response.writeHead(400, { 'Content-Type': 'application/json' });
-                response.end(JSON.stringify({ error: 'Class ID is required' }));
-                return;
-            }
-
-            const database = await readDatabase();
-            const classData = database.classes.find(cls => cls.id === classId);
-
-            if (!classData) {
-                response.writeHead(404, { 'Content-Type': 'application/json' });
-                response.end(JSON.stringify({ error: 'Class not found' }));
-                return;
-            }
-
-            response.writeHead(200, { 'Content-Type': 'application/json' });
-            response.end(JSON.stringify(classData));
-        } catch (error) {
-            console.error('Error fetching class:', error);
-            response.writeHead(500, { 'Content-Type': 'application/json' });
-            response.end(JSON.stringify({ error: 'Internal server error' }));
-        }
-    }
     // Handle class creation
     else if (request.method === 'POST' && parsedUrl.pathname === '/create-class') {
         let body = '';
@@ -119,9 +93,14 @@ const server = http.createServer(async (request, response) => {
                 newClass.attendanceHistory = [];
                 
                 // Ensure all required properties are present
-                if (!newClass.teacher) newClass.teacher = { firstName: '', lastName: '' };
-                if (!newClass.students) newClass.students = [];
-                if (!newClass.madrichim) newClass.madrichim = [];
+                newClass.teacher = newClass.teacher || { firstName: '', lastName: '' };
+                newClass.students = newClass.students || [];
+                newClass.madrichim = newClass.madrichim || [];
+
+                // Ensure classes array is initialized
+                if (!Array.isArray(database.classes)) {
+                    database.classes = [];
+                }
 
                 database.classes.push(newClass);
                 await writeDatabase(database);
@@ -136,64 +115,66 @@ const server = http.createServer(async (request, response) => {
         });
     }
     // Handle attendance update
-    else if (request.method === 'POST' && parsedUrl.pathname === '/update-attendance') {
-        let body = '';
+// Handle attendance update
+else if (request.method === 'POST' && parsedUrl.pathname === '/update-attendance') {
+    let body = '';
 
-        request.on('data', chunk => {
-            body += chunk.toString();
-        });
+    request.on('data', chunk => {
+        body += chunk.toString();
+    });
 
-        request.on('end', async () => {
-            try {
-                const data = JSON.parse(body);
-                console.log('Received attendance data:', data); // Debug log
+    request.on('end', async () => {
+        try {
+            const data = JSON.parse(body);
+            console.log('Received attendance data:', data); // Debug log
 
-                if (!data.classId) {
-                    throw new Error('Class ID is required');
-                }
-
-                if (!data.attendance || !Array.isArray(data.attendance)) {
-                    throw new Error('Invalid attendance data format');
-                }
-
-                const database = await readDatabase();
-                const classIndex = database.classes.findIndex(cls => cls.id === data.classId);
-
-                if (classIndex === -1) {
-                    throw new Error('Class not found');
-                }
-
-                // Ensure attendanceHistory exists
-                if (!database.classes[classIndex].attendanceHistory) {
-                    database.classes[classIndex].attendanceHistory = [];
-                }
-
-                // Format attendance record
-                const attendanceRecord = {
-                    date: new Date().toISOString(),
-                    attendance: data.attendance.map(entry => ({
-                        studentName: entry,
-                        present: true // Assuming all checked students are present
-                    }))
-                };
-
-                // Add attendance record
-                database.classes[classIndex].attendanceHistory.push(attendanceRecord);
-                await writeDatabase(database);
-
-                response.writeHead(200, { 'Content-Type': 'application/json' });
-                response.end(JSON.stringify({
-                    message: 'Attendance updated successfully',
-                    attendanceRecord: attendanceRecord
-                }));
-
-            } catch (error) {
-                console.error('Attendance Update Error:', error);
-                response.writeHead(500, { 'Content-Type': 'application/json' });
-                response.end(JSON.stringify({ message: 'Error updating attendance', error: error.message }));
+            if (!data.classId) {
+                throw new Error('Class ID is required');
             }
-        });
-    }
+
+            if (!data.attendance || !Array.isArray(data.attendance)) {
+                throw new Error('Invalid attendance data format');
+            }
+
+            const database = await readDatabase();
+            const classIndex = database.classes.findIndex(cls => cls.id === data.classId);
+
+            if (classIndex === -1) {
+                throw new Error('Class not found');
+            }
+
+            // Ensure attendanceHistory exists
+            if (!database.classes[classIndex].attendanceHistory) {
+                database.classes[classIndex].attendanceHistory = [];
+            }
+
+            // Format attendance record
+            const attendanceRecord = {
+                date: new Date().toISOString(),
+                attendance: data.attendance.map(entry => ({
+                    studentName: entry.studentName || 'Unknown',
+                    present: entry.present || false
+                }))
+            };
+
+            // Add attendance record
+            database.classes[classIndex].attendanceHistory.push(attendanceRecord);
+            await writeDatabase(database);
+
+            response.writeHead(200, { 'Content-Type': 'application/json' });
+            response.end(JSON.stringify({
+                message: 'Attendance updated successfully',
+                attendanceRecord: attendanceRecord
+            }));
+
+        } catch (error) {
+            console.error('Attendance Update Error:', error);
+            response.writeHead(500, { 'Content-Type': 'application/json' });
+            response.end(JSON.stringify({ message: 'Error updating attendance', error: error.message }));
+        }
+    });
+}
+
     // Get attendance history endpoint
     else if (request.method === 'GET' && parsedUrl.pathname === '/get-attendance-history') {
         try {
