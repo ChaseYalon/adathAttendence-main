@@ -76,7 +76,7 @@ input, select {
     padding: 10px;
     margin: 5px 0;
     height: 40px;
-    font-size: 15px;
+    font-size: 20px;
     text-align: center;
     border: 1px solid #4b331c;
     border-radius: 5px;
@@ -98,7 +98,7 @@ select {
 }
 
 header {
-    background-color: #e1f166;
+    background-color: #b3bc70;
     text-align: center;
     font-size: 30px;
     color: black;
