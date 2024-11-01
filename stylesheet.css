@@ -72,7 +72,7 @@ html {
 
 /* Enhanced input and select styling */
 input, select {
-    width: 80%;
+    width: 60%;
     padding: 10px;
     margin: 5px 0;
     height: 40px;
@@ -113,6 +113,18 @@ button {
     border-radius: 25px;
     background: #4b331c;
     width: 100%;
+    height: 50px;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    margin-top: 5px;
+    border: none;
+    transition: background-color 0.3s ease;
+}
+.submitbutton {
+    border-radius: 25px;
+    background: #4b331c;
+    width: 30%;
     height: 50px;
     color: white;
     font-size: 20px;

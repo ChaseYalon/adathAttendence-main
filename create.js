@@ -17,13 +17,16 @@ function parseNames(nameString) {
             };
         });
 }
-
+function sanitizeData(data) {
+    // Remove single quotes, semicolons, and parentheses to prevent execution of code like console.log()
+    return data.replace(/[';()]/g, "");
+}
 async function createClass() {
     // Get form inputs
-    const nClass = document.getElementById("newClass").value.trim();
-    const nStudentsInput = document.getElementById("students").value || '';
-    const nTeacherInput = document.getElementById("teacher").value.trim();
-    const nMadrichInput = document.getElementById("madrich").value || '';
+    const nClass = sanitizeData(document.getElementById("newClass").value.trim())
+    const nStudentsInput =sanitizeData( document.getElementById("students").value || '')
+    const nTeacherInput = sanitizeData(document.getElementById("teacher").value.trim())
+    const nMadrichInput = sanitizeData(document.getElementById("madrich").value || '')
 
     // Validate inputs
     if (!nClass) {
