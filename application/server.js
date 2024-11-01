@@ -3,17 +3,19 @@ const fs = require('fs').promises;
 const path = require('path');
 const url = require('url');
 
+// Define the path to database.json directly in the application folder
+const databasePath = path.join(__dirname, 'database.json');
 
 // Function to read the database
 async function readDatabase() {
     try {
-        const data = await fs.readFile('database.json', 'utf8');
+        const data = await fs.readFile(databasePath, 'utf8');
         return JSON.parse(data);
     } catch (error) {
         if (error.code === 'ENOENT') {
             // Initialize the database with an empty classes array
             const initialData = { classes: [] };
-            await fs.writeFile('database.json', JSON.stringify(initialData, null, 2));
+            await fs.writeFile(databasePath, JSON.stringify(initialData, null, 2));
             return initialData;
         }
         throw error;
@@ -22,7 +24,7 @@ async function readDatabase() {
 
 // Function to write to the database
 async function writeDatabase(data) {
-    await fs.writeFile('database.json', JSON.stringify(data, null, 2), 'utf8');
+    await fs.writeFile(databasePath, JSON.stringify(data, null, 2), 'utf8');
 }
 
 // Create HTTP server
@@ -42,8 +44,8 @@ const server = http.createServer(async (request, response) => {
 
     // Serve static files
     if (request.method === 'GET' && !parsedUrl.pathname.startsWith('/get-class')) {
-        let filePath = '.' + parsedUrl.pathname;
-        if (filePath === './') filePath = './index.html';
+        let filePath = path.join(__dirname, '..', parsedUrl.pathname); // Serve files relative to project root
+        if (filePath === path.join(__dirname, '../')) filePath = path.join(__dirname, '../index.html');
 
         const extname = path.extname(filePath);
         const mimeTypes = {
@@ -114,66 +116,64 @@ const server = http.createServer(async (request, response) => {
         });
     }
     // Handle attendance update
-// Handle attendance update
-else if (request.method === 'POST' && parsedUrl.pathname === '/update-attendance') {
-    let body = '';
+    else if (request.method === 'POST' && parsedUrl.pathname === '/update-attendance') {
+        let body = '';
 
-    request.on('data', chunk => {
-        body += chunk.toString();
-    });
+        request.on('data', chunk => {
+            body += chunk.toString();
+        });
 
-    request.on('end', async () => {
-        try {
-            const data = JSON.parse(body);
-            console.log('Received attendance data:', data); // Debug log
+        request.on('end', async () => {
+            try {
+                const data = JSON.parse(body);
+                console.log('Received attendance data:', data); // Debug log
 
-            if (!data.classId) {
-                throw new Error('Class ID is required');
+                if (!data.classId) {
+                    throw new Error('Class ID is required');
+                }
+
+                if (!data.attendance || !Array.isArray(data.attendance)) {
+                    throw new Error('Invalid attendance data format');
+                }
+
+                const database = await readDatabase();
+                const classIndex = database.classes.findIndex(cls => cls.id === data.classId);
+
+                if (classIndex === -1) {
+                    throw new Error('Class not found');
+                }
+
+                // Ensure attendanceHistory exists
+                if (!database.classes[classIndex].attendanceHistory) {
+                    database.classes[classIndex].attendanceHistory = [];
+                }
+
+                // Format attendance record
+                const attendanceRecord = {
+                    date: new Date().toISOString(),
+                    attendance: data.attendance.map(entry => ({
+                        studentName: entry.studentName || 'Unknown',
+                        present: entry.present || false
+                    }))
+                };
+
+                // Add attendance record
+                database.classes[classIndex].attendanceHistory.push(attendanceRecord);
+                await writeDatabase(database);
+
+                response.writeHead(200, { 'Content-Type': 'application/json' });
+                response.end(JSON.stringify({
+                    message: 'Attendance updated successfully',
+                    attendanceRecord: attendanceRecord
+                }));
+
+            } catch (error) {
+                console.error('Attendance Update Error:', error);
+                response.writeHead(500, { 'Content-Type': 'application/json' });
+                response.end(JSON.stringify({ message: 'Error updating attendance', error: error.message }));
             }
-
-            if (!data.attendance || !Array.isArray(data.attendance)) {
-                throw new Error('Invalid attendance data format');
-            }
-
-            const database = await readDatabase();
-            const classIndex = database.classes.findIndex(cls => cls.id === data.classId);
-
-            if (classIndex === -1) {
-                throw new Error('Class not found');
-            }
-
-            // Ensure attendanceHistory exists
-            if (!database.classes[classIndex].attendanceHistory) {
-                database.classes[classIndex].attendanceHistory = [];
-            }
-
-            // Format attendance record
-            const attendanceRecord = {
-                date: new Date().toISOString(),
-                attendance: data.attendance.map(entry => ({
-                    studentName: entry.studentName || 'Unknown',
-                    present: entry.present || false
-                }))
-            };
-
-            // Add attendance record
-            database.classes[classIndex].attendanceHistory.push(attendanceRecord);
-            await writeDatabase(database);
-
-            response.writeHead(200, { 'Content-Type': 'application/json' });
-            response.end(JSON.stringify({
-                message: 'Attendance updated successfully',
-                attendanceRecord: attendanceRecord
-            }));
-
-        } catch (error) {
-            console.error('Attendance Update Error:', error);
-            response.writeHead(500, { 'Content-Type': 'application/json' });
-            response.end(JSON.stringify({ message: 'Error updating attendance', error: error.message }));
-        }
-    });
-}
-
+        });
+    }
     // Get attendance history endpoint
     else if (request.method === 'GET' && parsedUrl.pathname === '/get-attendance-history') {
         try {
@@ -210,10 +210,11 @@ else if (request.method === 'POST' && parsedUrl.pathname === '/update-attendance
         response.end(JSON.stringify({ message: 'Not Found' }));
     }
 });
-var ip='192.168.1.162'
+
+const ip = '192.168.1.162';
 const PORT = 2000;
 
 // Start the server
-server.listen(PORT,'0.0.0.0',() => {
+server.listen(PORT, '0.0.0.0', () => {
     console.log(`Server running at http://${ip}:${PORT}`);
 });

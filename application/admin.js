@@ -3,7 +3,7 @@ import { Class, Student, Teacher, Madrich } from './script.js';
 // Function to fetch all classes data
 async function fetchClassesData() {
     try {
-        const response = await fetch('/database.json');
+        const response = await fetch('/application/database.json');
         const data = await response.json();
         return data.classes;
     } catch (error) {

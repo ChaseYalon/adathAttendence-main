@@ -11,7 +11,7 @@
         <header>
         <h1 class="child">Welcome to Adath Emanuel</h1>
         <a href="index.html" class="home-link" class="child">
-            <img src="home.png" alt="Home" height="50px" widht="50px">
+            <img src="../img/home.png" alt="Home" height="50px" widht="50px">
         </a>
     </header>
     </div>
@@ -44,7 +44,7 @@
         // Fetch classes and populate dropdown
         async function loadClasses() {
             try {
-                const response = await fetch('/database.json');
+                const response = await fetch('/application/database.json');
                 const data = await response.json();
                 const classSelect = document.getElementById('classSelect');
                 
@@ -68,7 +68,7 @@
             }
 
             try {
-                const response = await fetch('/database.json');
+                const response = await fetch('/application/database.json');
                 const data = await response.json();
                 const selectedClass = data.classes.find(c => c.id === classId);
                 
