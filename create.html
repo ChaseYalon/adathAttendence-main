@@ -2,27 +2,32 @@
 <html>
 <head>
     <title>Class Creator</title>
+    <link rel="stylesheet" href="stylesheet.css">
 </head>
 <body>
-    <label for="newClass">What would you like the class to be called?</label>
-    <br>
-    <input type="text" id="newClass">
-    <br>
-    <label for="students">Please enter the students separated by commas</label>
-    <br>
-    <input type="text" id="students">
-    <br>
-    <label for="teacher">Who is the teacher?</label>
-    <br>
-    <input type="text" id="teacher">
-    <br>
-    <label for="madrich">Please enter the madrich separated by commas</label>
-    <br>
-    <input type="text" id="madrich">
-    <br><br>
-    <button onclick="createClass()">Create Class</button>
-
-    <!-- Define this script as a module to support import statements -->
+    <header class="parent">
+        <h3 class="child">Welcome to Adath Emanuel</h3>
+        <a href='index.html'><img class="child" src="home.png"height=50px width=50px></a>
+    </header>
+    <div class="center" style="padding:5px">
+        <label for="newClass">What would you like the class to be called?</label>
+        <br>
+        <input type="text" id="newClass">
+        <br>
+        <label for="students">Please enter the students separated by commas</label>
+        <br>
+        <input type="text" id="students">
+        <br>
+        <label for="teacher">Who is the teacher?</label>
+        <br>
+        <input type="text" id="teacher">
+        <br>
+        <label for="madrich">Please enter the madrich separated by commas</label>
+        <br>
+        <input type="text" id="madrich">
+        <br><br>
+        <button onclick="createClass()">Create Class</button>
+    </div>
     <script type="module" src="create.js"></script>
 </body>
 </html>

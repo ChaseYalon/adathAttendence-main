@@ -1,15 +1,33 @@
 <!DOCTYPE html>
-
 <html>
+<head>
+    <link rel="stylesheet" href="stylesheet.css">
+    <title>Admin Dashboard</title>
+</head>
+<body>
+    <header class="parent">
+        <h3 class="child">Welcome to Adath Emanuel</h3>
+        <a href='index.html'><img class="child" src="home.png" height="50px" width="50px" alt="Home"></a>
+    </header>
 
-    <head>
+    <main class="dashboard-container">
+        <section class="attendance-summary">
+            <h2>Class Attendance Summary</h2>
+            <div id="classesTable"></div>
+        </section>
 
-        <title>Admin Dashboard</title>
-        
-    </head>
+        <section class="absence-report">
+            <h2>Absence Report</h2>
+            <div class="report-controls">
+                <select id="classSelect">
+                    <option value="">Select a class</option>
+                </select>
+                <button onclick="generateAbsenceReport()">Generate Report</button>
+            </div>
+            <div id="absenceReport"></div>
+        </section>
+    </main>
 
-    <body>
-
-    </body>
-
+    <script src="admin.js" type="module"></script>
+</body>
 </html>

@@ -3,7 +3,6 @@ const fs = require('fs').promises;
 const path = require('path');
 const url = require('url');
 
-const PORT = 3000;
 
 // Function to read the database
 async function readDatabase() {
@@ -211,8 +210,10 @@ else if (request.method === 'POST' && parsedUrl.pathname === '/update-attendance
         response.end(JSON.stringify({ message: 'Not Found' }));
     }
 });
+var ip='192.168.1.162'
+const PORT = 2000;
 
 // Start the server
-server.listen(PORT, () => {
-    console.log(`Server running at http://localhost:${PORT}`);
+server.listen(PORT,'0.0.0.0',() => {
+    console.log(`Server running at http://${ip}:${PORT}`);
 });

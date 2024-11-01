@@ -3,6 +3,173 @@ table, th, td {
     border-collapse: collapse;
     padding: 8px;
 }
+
 th {
     background-color: #f2f2f2;
+}
+
+.student-list {
+    margin: 20px;
+}
+
+.student-item {
+    display: flex;
+    font-size: 18px;
+    color: black;
+    gap: 10px;
+}
+
+.attendance-checkbox {
+    margin-left: auto;
+}
+
+.student-item div div {
+    text-align: left;
+    font-size: 16px;
+}
+
+h1 {
+    text-align: center;
+    font-size: 30px;
+    padding: 5px;
+    color: #4b331c;
+}
+
+p {
+    color: white;
+}
+
+html {
+    font-family: Arial;
+    background-color: #dc9d62;
+}
+
+.optionButton {
+    border-radius: 25px;
+    background: #4b331c;
+    width: 15%;
+    height: 140%;
+    text-align: center;
+    padding: 5px;
+    font-size: 20px;
+    color: white;
+    display: inline-block;
+    padding: 1rem 1rem;
+    vertical-align: middle;
+}
+
+.parent {
+    text-align: center;
+}
+
+.center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Enhanced input and select styling */
+input, select {
+    width: 80%;
+    padding: 10px;
+    margin: 5px 0;
+    height: 40px;
+    font-size: 15px;
+    text-align: center;
+    border: 1px solid #4b331c;
+    border-radius: 5px;
+    background-color: #fff;
+}
+
+/* Specific select styling */
+select {
+    width: 300px;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%234b331c%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 12px;
+    padding-right: 30px;
+}
+
+header {
+    background-color: #e1f166;
+    text-align: center;
+    font-size: 30px;
+    color: black;
+}
+
+h3 {
+    border-width: 2px;
+    padding: 0px;
+}
+
+button {
+    border-radius: 25px;
+    background: #4b331c;
+    width: 100%;
+    height: 50px;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    margin-top: 5px;
+    border: none;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #654427;
+}
+
+.child {
+    display: inline-block;
+    padding: 1rem 1rem;
+    vertical-align: middle;
+}
+
+/* Admin dashboard specific styles */
+.dashboard-container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.attendance-summary, .absence-report {
+    background-color: #958c4f;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.admin-table {
+    width: 100%;
+    margin-top: 15px;
+    background-color: #fff;
+}
+
+.admin-table th {
+    background-color: #4b331c;
+    color: white;
+    font-weight: bold;
+}
+
+.admin-table tr:nth-child(even) {
+    background-color: white;
+}
+
+.admin-table tr:hover {
+    background-color: white;
+}
+
+.report-controls {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    margin-bottom: 20px;
 }
